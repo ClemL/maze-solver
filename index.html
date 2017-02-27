@@ -127,7 +127,7 @@
 
 <div>
     <input id="rebuildgrid" type="button" value="Rebuild Grid" onclick="rebuildGrid();"class="btn btn-default"/>
-    <input id="reset" type="button" value="Reset Blocks" onclick="resetBtn();" class="btn btn-default"/>
+    <!--<input id="reset" type="button" value="Reset Blocks" onclick="resetBtn();" class="btn btn-default"/>-->
 </div>
             <br>
             <label for="start">Start Position: </label> <label id="start"></label>
@@ -139,24 +139,29 @@
     </td><td>
         <div class="col-lg-10">
             <label for="steps_lookback">Steps: </label>
-            <textarea class="form-control" rows="3" id="steps_lookback" readonly></textarea>
+            <textarea class="form-control" rows="2" id="steps_lookback" readonly></textarea>
         </div>
         <!--<label id="steps_lookback"></label>-->
 
         <div class="col-lg-10">
     <label for="blocked">Blocked: </label>
-    <textarea class="form-control" rows="3" id="blocked" readonly></textarea>
+    <textarea class="form-control" rows="2" id="blocked" readonly></textarea>
         </div>
 
 
         <div class="col-lg-10">
             <label for="msg">Log:</label>
-            <textarea class="form-control" rows="2" id="msg" readonly></textarea>
+            <textarea class="form-control" rows="5" id="msg" readonly></textarea>
         </div>
 
     </td><td>
 
         <br>
+
+        <div class="checkbox">
+            <input type="checkbox" id="show_sampled_nodes" name="show_sampled_nodes" value="show_sampled_nodes" checked="checked" onclick="Util.cleanup();"/>
+            <label for="show_sampled_nodes">Show Sampled Nodes</label></div>
+
         <div class="checkbox">
             <input type="checkbox" id="end_rerun" name="end_rerun" value="end_rerun" checked="checked" />
             <label for="end_rerun">AutoRun On End Select</label></div>
@@ -192,12 +197,6 @@
     var blocked = [];
     var method;
     function resetBtn() {
-        blocked = [];
-        document.getElementById('steps').innerHTML = '';
-        document.getElementById('steps_lookback').innerHTML = '';
-        document.getElementById('blocked').innerHTML = '';
-        document.getElementById('start').innerHTML = startNode.toString();
-        document.getElementById('end').innerHTML = endNode.toString();
         Util.cleanup();
 //        rebuildGrid();
     }
@@ -321,6 +320,7 @@
         }
     };
     Util.cleanup = function () {
+
         for (var k in gridMap) {
             if (k != startNode && k != endNode) {
                 gridMap[k].className = '';
@@ -333,6 +333,7 @@
         gridMap[endNode].className = 'end';
     };
     Util.colorPath= function (prevNode, steps) {
+        Util.log('colorPath');
         var steps_lookback = [];
         var lookback = endNode;
         while (lookback != startNode) {
@@ -352,7 +353,7 @@
         document.getElementById('steps_lookback').innerHTML = steps_lookback.toString();
     };
     Util.log = function (i){
-        document.getElementById('msg').innerHTML = i.toString();
+        document.getElementById('msg').innerHTML = i.toString() + '\n' + document.getElementById('msg').innerHTML  ;
         console.log(i);
     };
     function Dijkstra() {
@@ -404,16 +405,19 @@
         while (todoNodes) {
             //we pick the node with the shortest distance that hasn't yet been checked.
             currentNode = PopMinNodeTodo();
-            Util.log("popped ", currentNode);
+
+//            Util.log("popped " + currentNode);
+
             if (currentNode == -1) {
                 Util.log("done - currentNode == -1 ");
                 for (var node in prevNode)
-                    if (prevNode[node] == endNode)
+                    if (node == endNode)
                     {Util.colorPath(prevNode, steps);
                         Util.log("found solution !");
-                        break;}
+                        return;
+                    }
                 Util.log("failed to find solution !");
-                break;
+                return;
             }
             //Jump to that node and follow all edges that lead from it
             steps.push(parseInt(currentNode));
@@ -434,9 +438,11 @@
                 processNeighbor(w);
             }
             //mark the node
-            if (currentNode >= 0 && currentNode != startNode && currentNode != endNode) {
-                gridMap[currentNode].className = 'lime';
-            }
+
+            if (document.getElementById('show_sampled_nodes').checked)
+                if (currentNode >= 0 && currentNode != startNode && currentNode != endNode) {
+                    gridMap[currentNode].className = 'lime';
+                }
             alreadyChecked.push(currentNode);
             // this is a Dijkstra shortcut
             if (shortcut == true) {
@@ -457,7 +463,7 @@
             dist = Math.sqrt(Math.pow(x_diff, 2) + Math.pow(y_diff, 2));
         else //if (method == "manhattan")
             dist = (y_diff + x_diff );
-        Util.log("generate weight ", x_diff, y_diff, dist);
+        //Util.log("generate weight ", x_diff, y_diff, dist);
         return dist;
     };
     /**
@@ -496,11 +502,14 @@
         while (todo_dict) {
             // look up pop ??
             currentNode = PopMinNode();
-            Util.log("popped ", currentNode);
+            //Util.log("popped ", currentNode);
             steps.push(currentNode);
-            if (currentNode >= 0 && currentNode != startNode && currentNode != endNode) {
-                gridMap[currentNode].className = 'lime';
-            }
+
+            if (document.getElementById('show_sampled_nodes').checked)
+                if (currentNode >= 0 && currentNode != startNode && currentNode != endNode) {
+                    gridMap[currentNode].className = 'lime';
+                }
+
             //finished !
             if (currentNode == endNode) {
                 Util.log("done - currentNode == endNode ");
@@ -531,9 +540,26 @@
         }
     };
     buildGrid(colLen, rowLen);
+
     function rebuildGrid() {
-        colLen = parseInt(document.getElementById('col_len').value);
-        rowLen = parseInt(document.getElementById('row_len').value);
+        Util.log('rebuilding Grid');
+        startNode = null;
+        endNode = null;
+
+        blocked = [];
+        document.getElementById('steps').innerHTML = '';
+        document.getElementById('steps_lookback').innerHTML = '';
+        document.getElementById('blocked').innerHTML = '';
+        document.getElementById('start').innerHTML = '';
+        document.getElementById('end').innerHTML = '';
+
+        if (document.getElementById('col_len').value)
+            colLen = parseInt(document.getElementById('col_len').value);
+
+        if (document.getElementById('row_len').value)
+            rowLen = parseInt(document.getElementById('row_len').value);
+
+        Util.log('clearing maze grid');
         document.getElementById('mazeGrid').outerHTML = '';
         if (!colLen || colLen < 1)
         {alert("please enter a valid column length")
@@ -541,10 +567,13 @@
         if (!rowLen || rowLen < 1)
         {alert("please enter a valid row length")
             return;}
+
         buildGrid(colLen, rowLen);
         Util.cleanup();
     }
+
     function buildGrid(colLen, rowLen) {
+        Util.log('building Grid')
         var clickNode =  function (el, row, col, i) {
             /*
              util.log("You clicked on element:", el);
@@ -552,16 +581,19 @@
              util.log("You clicked on col:", col);*/
             Util.log("You clicked on node #:" + i);
             Util.cleanup();
+
+            if (i == startNode)
+                return;
+            if (i == endNode)
+                return;
+
             switch (editorMode) {
                 case
                 'setBlocks':
-                    if (i == startNode)
-                        return;
-                    if (i == endNode)
-                        return;
                     var index = blocked.indexOf(i);
                     if (index > -1) // found this i in the blocked list
                     {
+                        Util.log('removing from blocked ' + i);
                         el.className= '';
                         blocked.splice(index, 1);
                     }
@@ -570,22 +602,35 @@
                         el.className = 'blocked';
                         blocked.push(i)
                     }
+
+                    //do we want to re-run on this condition?
                     document.getElementById('blocked').innerHTML = blocked.toString();
                     if (document.getElementById('block_rerun').checked)
                         executeScriptBtn();
                     break;
                 case 'setStart':
+
+                    if (blocked.indexOf(i) > -1) {return ; }// found this i in the blocked list
+
                     if (startNode) gridMap[startNode].className = '';
                     el.className = 'start';
                     startNode = i;
+
+                    Util.log('startNode set to ' + i);
+                    //do we want to re-run on this condition?
                     document.getElementById('start').innerHTML = startNode.toString();
                     if (document.getElementById('start_rerun').checked)
                         executeScriptBtn();
                     break;
                 case 'setEnd':
+                    if (blocked.indexOf(i) > -1) {return ; }// found this i in the blocked list
+
                     if (endNode) gridMap[endNode].className = '';
                     el.className = 'end';
                     endNode = i;
+
+                    Util.log('endNode set to ' + i);
+                    //do we want to re-run on this condition?
                     document.getElementById('end').innerHTML = endNode.toString();
                     if (document.getElementById('end_rerun').checked)
                         executeScriptBtn();
