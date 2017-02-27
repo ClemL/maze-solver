@@ -82,12 +82,12 @@
             <td width="180px">
     <input id="executeScript" type="button" value="Execute Algorithm" onclick="executeScriptBtn();" class="btn btn-warning"/>
                 <br>
-                <label for="perf">perf time: </label> <label id="perf"></label>
+                <label for="perf">Perf time: </label> <label id="perf"></label>
 
                 <br>
-                <label for="steps">steps: </label> <label id="steps"></label>
+                <label for="steps">Steps: </label> <label id="steps"></label>
                 <br>
-                <label for="blockcount">blocks: </label> <label id="blockcount"></label>
+                <label for="blockcount">Blocks: </label> <label id="blockcount"></label>
             </td>
             <td>
                 <div class="radio">
@@ -263,9 +263,9 @@
         var perf;
         var d = document.getElementById('Dijkstra').checked;
         if (d ) {
-            t0 = Date.now();
+            t0 = performance.now();
             Dijkstra();
-            t1 = Date.now();
+            t1 = performance.now();
             perf = t1 - t0;
             document.getElementById('perf').innerHTML = perf.toString();
             return;
@@ -277,9 +277,9 @@
         else {
             method = "pythag";
         }
-        t0 = Date.now();
+        t0 = performance.now();
         AStar.runAstar();
-        t1 = Date.now();
+        t1 = performance.now();
         perf = t1 - t0;
         document.getElementById('perf').innerHTML = perf.toString();
     }
