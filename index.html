@@ -6,13 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MazeSolver_CAL</title>
     <!-- Latest compiled and minified CSS -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/slate/bootstrap.min.css" rel="stylesheet" integrity="sha384-RpX8okQqCyUNG7PlOYNybyJXYTtGQH+7rIKiVvg1DLg6jahLEk47VvpUyS+E2/uJ" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/slate/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-RpX8okQqCyUNG7PlOYNybyJXYTtGQH+7rIKiVvg1DLg6jahLEk47VvpUyS+E2/uJ" crossorigin="anonymous">
 
     <style>
         .grid {
             margin: 1em auto;
             border-collapse: collapse
         }
+
         .grid td {
             cursor: pointer;
             width: 40px;
@@ -22,38 +24,45 @@
             font-family: sans-serif;
             font-size: 13px
         }
+
         .grid td.blocked {
             background-color: black;
             font-weight: bold;
             color: white;
         }
+
         .grid td.start {
             background-color: green;
             font-weight: bold;
             color: black;
         }
+
         .grid td.end {
             background-color: red;
             font-weight: bold;
             color: black;
         }
+
         .grid td.greyed {
             background-color: grey;
             font-weight: bold;
             color: black;
         }
+
         .grid td.lime {
             background-color: lightgoldenrodyellow;
             font-weight: bold;
             color: black;
             transition-delay: 0.75s;
         }
+
         .grid td.path {
             background-color: royalblue;
             font-weight: bold;
             color: black;
             transition-delay: 0.25s;
         }
+
         .grid td.debug {
             background-color: black;
             font-weight: bold;
@@ -67,22 +76,26 @@
         <tr>
             <td width="120px">
                 <div class="btn-group-vertical">
-                    <input id="setStart" type="button" value="Select Start" onclick="setStartBtn();" class="btn btn-success"/>
+                    <input id="setStart" type="button" value="Select Start" onclick="setStartBtn();"
+                           class="btn btn-success"/>
                     <br>
                     <input id="setEnd" type="button" value="Select End" onclick="setEndBtn();" class="btn btn-danger"/>
                 </div>
             </td>
             <td width="120px">
                 <div class="btn-group-vertical">
-                    <input id="setBlocks" type="button" value="Select Blocks" onclick="setBlocksBtn();" class="btn btn-default"/>
-<br>
-                    <input id="setDebug" type="button" value="Debug Info" onclick="setDebugBtn();"class="btn btn-info"/>
+                    <input id="setBlocks" type="button" value="Select Blocks" onclick="setBlocksBtn();"
+                           class="btn btn-default"/>
+                    <br>
+                    <input id="setDebug" type="button" value="Debug Info" onclick="setDebugBtn();"
+                           class="btn btn-info"/>
                 </div>
             </td>
             <td width="180px">
-    <input id="executeScript" type="button" value="Execute Algorithm" onclick="executeScriptBtn();" class="btn btn-warning"/>
+                <input id="executeScript" type="button" value="Execute Algorithm" onclick="executeScriptBtn();"
+                       class="btn btn-warning"/>
                 <br>
-                <label for="perf">Perf time: </label> <label id="perf"></label>
+                <label for="perf">Perf Time[ms]: </label> <label id="perf"></label>
 
                 <br>
                 <label for="steps">Steps: </label> <label id="steps"></label>
@@ -91,101 +104,106 @@
             </td>
             <td>
                 <div class="radio">
-                <input type="radio" id="pythag" name="method" value="pythag" checked="checked" onclick="executeScriptBtn();"/>
-                <label for="pythag">A* Pythagorean Weight</label><br>
-                <input type="radio" id="manhattan" name="method" value="manhattan" onclick="executeScriptBtn();"/>
-                <label for="manhattan">A* Manhattan Weight</label><br>
-                <input type="radio" id="Dijkstra" name="method" value="Dijkstra" onclick="executeScriptBtn();"/>
-                <label for="Dijkstra">Dijkstra's Algorithm</label>
+                    <input type="radio" id="pythag" name="method" value="pythag" checked="checked"
+                           onclick="executeScriptBtn();"/>
+                    <label for="pythag">A* Pythagorean Weight</label><br>
+                    <input type="radio" id="manhattan" name="method" value="manhattan" onclick="executeScriptBtn();"/>
+                    <label for="manhattan">A* Manhattan Weight</label><br>
+                    <input type="radio" id="Dijkstra" name="method" value="Dijkstra" onclick="executeScriptBtn();"/>
+                    <label for="Dijkstra">Dijkstra's Algorithm</label>
                 </div>
                 <div class="checkbox">
-                <input type="checkbox" id="Dijkstra_shortcut" name="Dijkstra_shortcut"
-                       value="Dijkstra_shortcut" checked="checked" onclick="executeScriptBtn();"/>
+                    <input type="checkbox" id="Dijkstra_shortcut" name="Dijkstra_shortcut"
+                           value="Dijkstra_shortcut" checked="checked" onclick="executeScriptBtn();"/>
                     <label for="Dijkstra_shortcut">Dijkstra "Shortcut"</label></div>
             </td>
         </tr>
     </table>
 </div>
 <br>
-<div id="debug" style="display: none" >
+<div id="debug" style="display: none">
     <table class="table table-striped table-hover ">
-    <tr>
-        <td width="240px">
-    <br>
-            <label>Grid Parameters</label>
-            <div class="form-group">
-                <div class="col-lg-10">
-                    <input type="text" class="form-control" id="row_len" placeholder="Rows" value="">
+        <tr>
+            <td width="240px">
+                <br>
+                <label>Grid Parameters</label>
+                <div class="form-group">
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" id="row_len" placeholder="Rows" value="">
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <div class="col-lg-10">
-                    <input type="text" class="form-control" id="col_len" placeholder="Columns" value="">
+                <div class="form-group">
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" id="col_len" placeholder="Columns" value="">
+                    </div>
                 </div>
-            </div>
 
-<div>
-    <input id="rebuildgrid" type="button" value="Rebuild Grid" onclick="rebuildGrid();"class="btn btn-default"/>
-    <!--<input id="reset" type="button" value="Reset Blocks" onclick="resetBtn();" class="btn btn-default"/>-->
-</div>
-            <br>
-            <label for="start">Start Position: </label> <label id="start"></label>
-            <br>
-            <label for="end">End Position: </label> <label id="end"></label>
-    <h5><input id="foo" type="button" value="foo" onclick="fooBtn();" hidden="true"/></h5>
-    <h5><input id="bar" type="button" value="bar" onclick="barBtn();" hidden="true"/></h5>
+                <div>
+                    <input id="rebuildgrid" type="button" value="Rebuild Grid" onclick="rebuildGrid();"
+                           class="btn btn-default"/>
+                    <!--<input id="reset" type="button" value="Reset Blocks" onclick="resetBtn();" class="btn btn-default"/>-->
+                </div>
+                <br>
+                <label for="start">Start Position: </label> <label id="start"></label>
+                <br>
+                <label for="end">End Position: </label> <label id="end"></label>
+                <!--<h5><input id="foo" type="button" value="foo" onclick="fooBtn();" hidden="true"/></h5>-->
+                <!--<h5><input id="bar" type="button" value="bar" onclick="barBtn();" hidden="true"/></h5>-->
 
-    </td><td>
-        <div class="col-lg-10">
-            <label for="steps_lookback">Steps: </label>
-            <textarea class="form-control" rows="2" id="steps_lookback" readonly></textarea>
-        </div>
-        <!--<label id="steps_lookback"></label>-->
+            </td>
+            <td>
+                <div class="col-lg-10">
+                    <label for="steps_lookback">Steps: </label>
+                    <textarea class="form-control" rows="2" id="steps_lookback" readonly></textarea>
+                </div>
+                <!--<label id="steps_lookback"></label>-->
 
-        <div class="col-lg-10">
-    <label for="blocked">Blocked: </label>
-    <textarea class="form-control" rows="2" id="blocked" readonly></textarea>
-        </div>
+                <div class="col-lg-10">
+                    <label for="blocked">Blocked: </label>
+                    <textarea class="form-control" rows="2" id="blocked" readonly></textarea>
+                </div>
 
 
-        <div class="col-lg-10">
-            <label for="msg">Log:</label>
-            <textarea class="form-control" rows="5" id="msg" readonly></textarea>
-        </div>
+                <div class="col-lg-10">
+                    <label for="msg">Log:</label>
+                    <textarea class="form-control" rows="5" id="msg" readonly></textarea>
+                </div>
 
-    </td><td>
+            </td>
+            <td>
 
-        <br>
+                <br>
 
-        <div class="checkbox">
-            <input type="checkbox" id="show_sampled_nodes" name="show_sampled_nodes" value="show_sampled_nodes" checked="checked" onclick="Util.cleanup();"/>
-            <label for="show_sampled_nodes">Show Sampled Nodes</label></div>
+                <div class="checkbox">
+                    <input type="checkbox" id="show_sampled_nodes" name="show_sampled_nodes" value="show_sampled_nodes"
+                           checked="checked" onclick="Util.cleanup();"/>
+                    <label for="show_sampled_nodes">Show Sampled Nodes</label></div>
 
-        <div class="checkbox">
-            <input type="checkbox" id="end_rerun" name="end_rerun" value="end_rerun" checked="checked" />
-            <label for="end_rerun">AutoRun On End Select</label></div>
+                <div class="checkbox">
+                    <input type="checkbox" id="end_rerun" name="end_rerun" value="end_rerun" checked="checked"/>
+                    <label for="end_rerun">AutoRun On End Select</label></div>
 
-        <div class="checkbox">
-            <input type="checkbox" id="start_rerun" name="start_rerun" value="start_rerun" checked="checked" />
-            <label for="start_rerun">AutoRun On Start Select</label></div>
+                <div class="checkbox">
+                    <input type="checkbox" id="start_rerun" name="start_rerun" value="start_rerun" checked="checked"/>
+                    <label for="start_rerun">AutoRun On Start Select</label></div>
 
-        <div class="checkbox">
-            <input type="checkbox" id="block_rerun" name="block_rerun" value="block_rerun" checked="checked" />
-            <label for="block_rerun">AutoRun On Block Select</label></div>
+                <div class="checkbox">
+                    <input type="checkbox" id="block_rerun" name="block_rerun" value="block_rerun" checked="checked"/>
+                    <label for="block_rerun">AutoRun On Block Select</label></div>
 
-    </td>
-    </tr>
+            </td>
+        </tr>
     </table>
 </div>
 
 <script type="text/javascript">
     /*
-    *
+     *
      * try "namespacing" variables and functions inside other named Objects. This is mostly for neatness
      * investigate a minheap for popping the node with lowest value
      * constant names should be all caps. "class" names should be capitalized
-    * */
+     * */
     var rowLen = 16;
     var colLen = 16;
     var editorMode = 'setBlocks';
@@ -196,10 +214,7 @@
     var gridMap = [];
     var blocked = [];
     var method;
-    function resetBtn() {
-        Util.cleanup();
-//        rebuildGrid();
-    }
+
     function barBtn() {
         Util.log("You clicked on barBtn");
         //testing the get min out of dict function..
@@ -241,7 +256,7 @@
     }
     function executeScriptBtn() {
         Util.log("You clicked on executeScriptBtn");
-        if (!startNode && !endNode ) {
+        if (!startNode && !endNode) {
             gridMap[rowLen * colLen].className = 'end';
             endNode = rowLen * colLen;
             gridMap[1].className = 'start';
@@ -250,11 +265,11 @@
             document.getElementById('end').innerHTML = endNode.toString();
         }
         Util.cleanup();
-        if (!startNode ) {
+        if (!startNode) {
             alert("please select start node");
             return -1;
         }
-        if (!endNode ) {
+        if (!endNode) {
             alert("please select end node");
             return -1;
         }
@@ -262,7 +277,7 @@
         var t1;
         var perf;
         var d = document.getElementById('Dijkstra').checked;
-        if (d ) {
+        if (d) {
             t0 = performance.now();
             Dijkstra();
             t1 = performance.now();
@@ -271,7 +286,7 @@
             return;
         }
         var k = document.getElementById('manhattan').checked;
-        if (k ) {
+        if (k) {
             method = "manhattan";
         }
         else {
@@ -332,8 +347,8 @@
         gridMap[startNode].className = 'start';
         gridMap[endNode].className = 'end';
     };
-    Util.colorPath= function (prevNode, steps) {
-        Util.log('colorPath');
+    Util.colorPath = function (prevNode, steps) {
+        Util.log('ColorPath ' + steps.toString());
         var steps_lookback = [];
         var lookback = endNode;
         while (lookback != startNode) {
@@ -347,13 +362,13 @@
         }
         var stepString = Object.keys(steps).length.toString();
         var blockString = Object.keys(blocked).length.toString();
-        var totalString = (rowLen*colLen).toString();
+        var totalString = (rowLen * colLen).toString();
         document.getElementById('blockcount').innerHTML = blockString + "/" + totalString;
         document.getElementById('steps').innerHTML = stepString + "/" + totalString;
         document.getElementById('steps_lookback').innerHTML = steps_lookback.toString();
     };
-    Util.log = function (i){
-        document.getElementById('msg').innerHTML = i.toString() + '\n' + document.getElementById('msg').innerHTML  ;
+    Util.log = function (i) {
+        document.getElementById('msg').innerHTML = i.toString() + '\n' + document.getElementById('msg').innerHTML;
         console.log(i);
     };
     function Dijkstra() {
@@ -374,7 +389,9 @@
         // We should also record that the start node was the previous one.
         // Start node done! Mark it checked.
         //iterate until we are have nothing else.
+
         function PopMinNodeTodo() {
+            //this should probably be implemented with a heap so operations can be log n time..
             var low_key = -1;
             var low_value = Number.MAX_VALUE;
             for (var key in shortestCost) {
@@ -388,6 +405,7 @@
             delete todoNodes[low_key];
             return parseInt(low_key);
         }
+
         function processNeighbor(n) {
             var k = (1 + shortestCost[currentNode]);
             if (k < shortestCost[n]) {
@@ -395,6 +413,7 @@
                 prevNode[n] = currentNode;
             }
         }
+
         var shortcut = document.getElementById('Dijkstra_shortcut').checked;
         delete todoNodes[0];
         function isBlocked(i, alreadyChecked) {
@@ -402,21 +421,22 @@
             if (i == -1) return true;
             return blocked.indexOf(i) > -1 || alreadyChecked.indexOf(i) > -1;
         }
+
         while (todoNodes) {
+
             //we pick the node with the shortest distance that hasn't yet been checked.
             currentNode = PopMinNodeTodo();
 
-//            Util.log("popped " + currentNode);
-
+            //we've exhausted everything
             if (currentNode == -1) {
-                Util.log("done - currentNode == -1 ");
+                Util.log("Dijkstra done, currentNode == -1 ");
                 for (var node in prevNode)
-                    if (node == endNode)
-                    {Util.colorPath(prevNode, steps);
-                        Util.log("found solution !");
+                    if (node == endNode) {
+                        Util.colorPath(prevNode, steps);
+                        Util.log("Dijkstra found solution !");
                         return;
                     }
-                Util.log("failed to find solution !");
+                Util.log("Dijkstra failed to find solution !");
                 return;
             }
             //Jump to that node and follow all edges that lead from it
@@ -447,7 +467,7 @@
             // this is a Dijkstra shortcut
             if (shortcut == true) {
                 if (currentNode == endNode) {
-                    Util.log("done - Dijkstra shortcut ");
+                    Util.log("Dijkstra shortcut - found solution");
                     Util.colorPath(prevNode, steps);
                     break;
                 }
@@ -494,11 +514,13 @@
             delete todo_dict[low_key];
             return parseInt(low_key);
         }
+
         function isBlocked(i) {
             // if its been blocked or we have already seen it, true..
             if (i == -1) return true;
             return blocked.indexOf(i) > -1 || steps.indexOf(i) > -1;
         }
+
         while (todo_dict) {
             // look up pop ??
             currentNode = PopMinNode();
@@ -542,7 +564,7 @@
     buildGrid(colLen, rowLen);
 
     function rebuildGrid() {
-        Util.log('rebuilding Grid');
+        Util.log('Rebuilding Grid');
         startNode = null;
         endNode = null;
 
@@ -559,22 +581,24 @@
         if (document.getElementById('row_len').value)
             rowLen = parseInt(document.getElementById('row_len').value);
 
-        Util.log('clearing maze grid');
+        Util.log('Clearing maze grid');
         document.getElementById('mazeGrid').outerHTML = '';
-        if (!colLen || colLen < 1)
-        {alert("please enter a valid column length")
-            return;}
-        if (!rowLen || rowLen < 1)
-        {alert("please enter a valid row length")
-            return;}
+        if (!colLen || colLen < 1) {
+            alert("please enter a valid column length");
+            return;
+        }
+        if (!rowLen || rowLen < 1) {
+            alert("please enter a valid row length");
+            return;
+        }
 
         buildGrid(colLen, rowLen);
         Util.cleanup();
     }
 
     function buildGrid(colLen, rowLen) {
-        Util.log('building Grid')
-        var clickNode =  function (el, row, col, i) {
+        Util.log('Building Grid');
+        var clickNode = function (el, row, col, i) {
             /*
              util.log("You clicked on element:", el);
              util.log("You clicked on row:", row);
@@ -593,8 +617,8 @@
                     var index = blocked.indexOf(i);
                     if (index > -1) // found this i in the blocked list
                     {
-                        Util.log('removing from blocked ' + i);
-                        el.className= '';
+                        Util.log('Removing from blocked ' + i);
+                        el.className = '';
                         blocked.splice(index, 1);
                     }
                     else    // did not util.find i in blocked list
@@ -610,26 +634,30 @@
                     break;
                 case 'setStart':
 
-                    if (blocked.indexOf(i) > -1) {return ; }// found this i in the blocked list
+                    if (blocked.indexOf(i) > -1) {
+                        return;
+                    }// found this i in the blocked list
 
                     if (startNode) gridMap[startNode].className = '';
                     el.className = 'start';
                     startNode = i;
 
-                    Util.log('startNode set to ' + i);
+                    Util.log('StartNode set to ' + i);
                     //do we want to re-run on this condition?
                     document.getElementById('start').innerHTML = startNode.toString();
                     if (document.getElementById('start_rerun').checked)
                         executeScriptBtn();
                     break;
                 case 'setEnd':
-                    if (blocked.indexOf(i) > -1) {return ; }// found this i in the blocked list
+                    if (blocked.indexOf(i) > -1) {
+                        return;
+                    }// found this i in the blocked list
 
                     if (endNode) gridMap[endNode].className = '';
                     el.className = 'end';
                     endNode = i;
 
-                    Util.log('endNode set to ' + i);
+                    Util.log('EndNode set to ' + i);
                     //do we want to re-run on this condition?
                     document.getElementById('end').innerHTML = endNode.toString();
                     if (document.getElementById('end_rerun').checked)
@@ -639,7 +667,7 @@
         };
         var grid = clickableGrid(colLen, rowLen, clickNode);
         document.body.appendChild(grid);
-        grid.id='mazeGrid';
+        grid.id = 'mazeGrid';
         return grid;
     }
     function clickableGrid(rows, cols, callback) {
