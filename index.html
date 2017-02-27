@@ -117,6 +117,27 @@
                            value="Dijkstra_shortcut" checked="checked" onclick="executeScriptBtn();"/>
                     <label for="Dijkstra_shortcut">Dijkstra "Shortcut"</label></div>
             </td>
+
+            <td>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="show_sampled_nodes" name="show_sampled_nodes" value="show_sampled_nodes"
+                           checked="checked" onclick="Util.cleanup();"/>
+                    <label for="show_sampled_nodes">Show Sampled Nodes</label></div>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="end_rerun" name="end_rerun" value="end_rerun" checked="checked"/>
+                    <label for="end_rerun">AutoRun On End Select</label></div>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="start_rerun" name="start_rerun" value="start_rerun" checked="checked"/>
+                    <label for="start_rerun">AutoRun On Start Select</label></div>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="block_rerun" name="block_rerun" value="block_rerun" checked="checked"/>
+                    <label for="block_rerun">AutoRun On Block Select</label></div>
+
+            </td>
         </tr>
     </table>
 </div>
@@ -144,10 +165,12 @@
                            class="btn btn-default"/>
                     <!--<input id="reset" type="button" value="Reset Blocks" onclick="resetBtn();" class="btn btn-default"/>-->
                 </div>
+                <div hidden="hidden">
                 <br>
                 <label for="start">Start Position: </label> <label id="start"></label>
                 <br>
                 <label for="end">End Position: </label> <label id="end"></label>
+                </div>
                 <!--<h5><input id="foo" type="button" value="foo" onclick="fooBtn();" hidden="true"/></h5>-->
                 <!--<h5><input id="bar" type="button" value="bar" onclick="barBtn();" hidden="true"/></h5>-->
 
@@ -164,33 +187,13 @@
                     <textarea class="form-control" rows="2" id="blocked" readonly></textarea>
                 </div>
 
-
-                <div class="col-lg-10">
-                    <label for="msg">Log:</label>
-                    <textarea class="form-control" rows="5" id="msg" readonly></textarea>
-                </div>
-
             </td>
             <td>
 
-                <br>
-
-                <div class="checkbox">
-                    <input type="checkbox" id="show_sampled_nodes" name="show_sampled_nodes" value="show_sampled_nodes"
-                           checked="checked" onclick="Util.cleanup();"/>
-                    <label for="show_sampled_nodes">Show Sampled Nodes</label></div>
-
-                <div class="checkbox">
-                    <input type="checkbox" id="end_rerun" name="end_rerun" value="end_rerun" checked="checked"/>
-                    <label for="end_rerun">AutoRun On End Select</label></div>
-
-                <div class="checkbox">
-                    <input type="checkbox" id="start_rerun" name="start_rerun" value="start_rerun" checked="checked"/>
-                    <label for="start_rerun">AutoRun On Start Select</label></div>
-
-                <div class="checkbox">
-                    <input type="checkbox" id="block_rerun" name="block_rerun" value="block_rerun" checked="checked"/>
-                    <label for="block_rerun">AutoRun On Block Select</label></div>
+                <div class="col-lg-10">
+                    <label for="msg">Log:</label>
+                    <textarea class="form-control" rows="6" id="msg" readonly></textarea>
+                </div>
 
             </td>
         </tr>
