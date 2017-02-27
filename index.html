@@ -53,14 +53,14 @@
             background-color: lightgoldenrodyellow;
             font-weight: bold;
             color: black;
-            transition-delay: 0.75s;
+            transition-delay: 0.25s;
         }
 
         .grid td.path {
             background-color: royalblue;
             font-weight: bold;
             color: black;
-            transition-delay: 0.25s;
+            transition-delay: 0.15s;
         }
 
         .grid td.debug {
@@ -136,6 +136,10 @@
                 <div class="checkbox">
                     <input type="checkbox" id="block_rerun" name="block_rerun" value="block_rerun" checked="checked"/>
                     <label for="block_rerun">AutoRun On Block Select</label></div>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="show_numbers" name="show_numbers" value="show_numbers" onclick="rebuildGrid();"/>
+                    <label for="show_numbers">Show Indexes</label></div>
 
             </td>
         </tr>
@@ -670,7 +674,9 @@
             var tr = grid.appendChild(document.createElement('tr'));
             for (var c = 0; c < cols; ++c) {
                 var cell = tr.appendChild(document.createElement('td'));
-                cell.innerHTML = ++i;
+                if (document.getElementById('show_numbers').checked)
+                    cell.innerHTML = i;
+                i++;
                 gridMap[i] = cell;
                 yPosition[i] = c;
                 xPosition[i] = r;
