@@ -96,7 +96,6 @@
                        class="btn btn-warning"/>
                 <br>
                 <label for="perf">Perf Time[ms]: </label> <label id="perf"></label>
-
                 <br>
                 <label for="steps">Steps: </label> <label id="steps"></label>
                 <br>
@@ -206,52 +205,55 @@
 
 <script type="text/javascript">
 
-    //globals
+    //  globals
     var rowLen = 16;
     var colLen = 16;
     var editorMode = 'setBlocks';
     var startNode;
     var endNode;
 
-    //dicts can probably be made tuples ?
+    //  dicts can probably be made tuples ?
     var yPosition = [];
     var xPosition = [];
     var gridMap = [];
     var blocked = [];
 
+    //  enable the debug menu.
     function setDebugBtn() {
         Util.log("You clicked on setDebugBtn");
         //editorMode = 'setDebug';
         var x = document.getElementById('debug');
-        if (x.style.display === 'none') {
-            /*
-             document.getElementById('perf').innerHTML = perf.toString();
-             document.getElementById('start').innerHTML = startNode.toString();
-             document.getElementById('end').innerHTML = endNode.toString();
-             document.getElementById('steps').innerHTML = Object.keys(steps).length.toString();
-             document.getElementById('steps_lookback').innerHTML = steps_lookback.toString();
-             */
+        if (x.style.display === 'none')
+        {
             x.style.display = 'block';
         } else {
             x.style.display = 'none';
         }
     }
+
+    //  turn on the blocks selection mode
     function setBlocksBtn() {
         Util.log("You clicked on setBlocksBtn");
         editorMode = 'setBlocks'
     }
+
+    //  turn on the select start mode
     function setStartBtn() {
         Util.log("You clicked on setStartBtn");
         editorMode = 'setStart'
     }
+
+    //  turn on the select end mode
     function setEndBtn() {
         Util.log("You clicked on setEndBtn");
         editorMode = 'setEnd'
     }
+
+    //  execute an algorithm.
     function executeScriptBtn() {
         Util.log("Executing Script ");
 
-        //default some values.
+        //  default some values.
         if (!startNode && !endNode) {
             gridMap[rowLen * colLen].className = 'end';
             endNode = rowLen * colLen;
@@ -262,6 +264,8 @@
         }
 
         Util.cleanup();
+
+        //  warnings for missing nodes
         if (!startNode) {
             alert("Please select start node");
             return -1;
@@ -270,11 +274,11 @@
             alert("Please select end node");
             return -1;
         }
+
         var t0;
         var t1;
         var perf;
-        var d = document.getElementById('Dijkstra').checked;
-        if (d) {
+        if (document.getElementById('Dijkstra').checked) {
             t0 = performance.now();
             Dijkstra();
             t1 = performance.now();
@@ -289,6 +293,8 @@
         perf = t1 - t0;
         document.getElementById('perf').innerHTML = perf.toString();
     }
+
+    //  each of these just find nodes on the one dimension array.
     /**
      * @return {number}
      */
@@ -325,31 +331,35 @@
             return parseInt(i) - 1;
         }
     };
-    Util.cleanup = function () {
 
-        for (var k in gridMap) {
-            if (k != startNode && k != endNode) {
-                gridMap[k].className = '';
+    //  cleanup resets properties the nodes
+    Util.cleanup = function () {
+        for (var node in gridMap) {
+            if (node != startNode && node != endNode) {
+                gridMap[node].className = '';
             }
         }
-        for (var t in blocked) {
-            gridMap[blocked[t]].className = 'blocked';
+        for (var blocked_node in blocked) {
+            gridMap[blocked[blocked_node]].className = 'blocked';
         }
         if (startNode) gridMap[startNode].className = 'start';
         if (endNode)  gridMap[endNode].className = 'end';
     };
+
+    //  colors the path from end to start withe the prevnode dictionary.
+    //  populate debug text boxes with metadata
     Util.colorPath = function (prevNode, steps) {
         Util.log('ColorPath ' + steps.length.toString());
         var steps_lookback = [];
         var lookback = endNode;
         while (lookback != startNode) {
-            var ts = prevNode[lookback];
-            steps_lookback.push(ts);
-            lookback = ts;
+            var lastNode = prevNode[lookback];
+            steps_lookback.push(lastNode);
+            lookback = lastNode;
         }
-        for (var slb in steps_lookback) {
-            if (steps_lookback[slb] != startNode)
-                gridMap[steps_lookback[slb]].className = 'path';
+        for (var currentStep in steps_lookback) {
+            if (steps_lookback[currentStep] != startNode)
+                gridMap[steps_lookback[currentStep]].className = 'path';
         }
         var stepString = Object.keys(steps).length.toString();
         var blockString = Object.keys(blocked).length.toString();
@@ -358,17 +368,22 @@
         document.getElementById('steps').innerHTML = stepString + "/" + totalString;
         document.getElementById('steps_lookback').innerHTML = steps_lookback.toString();
     };
+
     Util.log = function (i) {
         document.getElementById('msg').innerHTML = i.toString() + '\n' + document.getElementById('msg').innerHTML;
         console.log(i);
     };
+
+    //  impl.
     function Dijkstra() {
         var alreadyChecked = [];
         var todoNodes = [];
         var shortestCost = [];
         var prevNode = [];
 
+        //  theres probably a better way to populate some data structures here
         delete xPosition[0];
+
         for (var t in xPosition) {
             shortestCost[t] = Number.MAX_VALUE;
             prevNode[t] = 0;
@@ -379,6 +394,9 @@
         var steps = [];
         shortestCost[startNode] = 0;
 
+        delete todoNodes[0];
+
+        //  find the node with the lowest cost. pop it.
         function PopMinNodeTodo() {
             //this should probably be implemented with a heap so operations can be log n time..
             var low_key = -1;
@@ -395,6 +413,7 @@
             return parseInt(low_key);
         }
 
+        //  check a neighbor and compute shortest dist, populate that and the prev node.
         function processNeighbor(n) {
             var k = (1 + shortestCost[currentNode]);
             if (k < shortestCost[n]) {
@@ -403,18 +422,15 @@
             }
         }
 
-        delete todoNodes[0];
+        // if its been blocked or we have already seen it, true..
         function isBlocked(i, alreadyChecked) {
-            // if its been blocked or we have already seen it, true..
             if (i == -1) return true;
             return blocked.indexOf(i) > -1 || alreadyChecked.indexOf(i) > -1;
         }
 
         while (todoNodes) {
-
             //we pick the node with the shortest distance that hasn't yet been checked.
             currentNode = PopMinNodeTodo();
-            //Util.log(currentNode);
 
             //we've exhausted everything
             if (currentNode == -1) {
@@ -428,12 +444,14 @@
                 Util.log("Dijkstra failed to find solution !");
                 return;
             }
+
             //Jump to that node and follow all edges that lead from it
             steps.push(parseInt(currentNode));
             var n = Util.findNorth(currentNode);
             var s = Util.findSouth(currentNode);
             var e = Util.findEast(currentNode);
             var w = Util.findWest(currentNode);
+
             if (!isBlocked(n, alreadyChecked)) {
                 processNeighbor(n);
             }
@@ -446,15 +464,16 @@
             if (!isBlocked(w, alreadyChecked)) {
                 processNeighbor(w);
             }
-            //mark the node
 
+            //mark the node
             if (document.getElementById('show_sampled_nodes').checked)
                 if (currentNode >= 0 && currentNode != startNode && currentNode != endNode) {
                     gridMap[currentNode].className = 'lime';
                 }
 
             alreadyChecked.push(currentNode);
-            // this is a Dijkstra shortcut
+
+            // this is a Dijkstra shortcut.
             if (document.getElementById('Dijkstra_shortcut').checked) {
                 if (currentNode == endNode) {
                     Util.log("Dijkstra shortcut - found solution");
@@ -464,7 +483,11 @@
             }
         }
     }
+
+
     var AStar = {};
+
+    // computes the weight, manhattan or pythag.
     /**
      * @return {number}
      */
@@ -477,6 +500,8 @@
         else //if (method == "manhattan")
             return (y_diff + x_diff );
     };
+
+    // execute algorithm
     /**
      * @return {number}
      */
@@ -488,6 +513,8 @@
         //var parent_dict =[];
         //push start node
         todo_dict[startNode] = 0;
+
+        //  pop node with the smallest weight.
         /**
          * @return {number}
          */
@@ -537,6 +564,7 @@
                 Util.colorPath(parent_dict, steps);
                 break;
             }
+
             var n = Util.findNorth(currentNode);
             var s = Util.findSouth(currentNode);
             var e = Util.findEast(currentNode);
@@ -561,7 +589,6 @@
             }
         }
     };
-    buildGrid(colLen, rowLen);
 
     function rebuildGrid() {
         Util.log('Rebuilding Grid');
@@ -598,6 +625,8 @@
 
     function buildGrid(colLen, rowLen) {
         Util.log('Building Grid');
+
+        //  callback for clicking on each node
         var clickNode = function (el, row, col, i) {
             Util.log("You clicked on node #:" + i);
             Util.cleanup();
@@ -628,6 +657,7 @@
                     if (document.getElementById('block_rerun').checked)
                         executeScriptBtn();
                     break;
+
                 case 'setStart':
 
                     if (blocked.indexOf(i) > -1) {
@@ -644,11 +674,13 @@
                     if (document.getElementById('start_rerun').checked)
                         executeScriptBtn();
                     break;
+
                 case 'setEnd':
                     if (blocked.indexOf(i) > -1) {
                         return;
-                    }// found this i in the blocked list
+                    }
 
+                    // found this i in the blocked list
                     if (endNode) gridMap[endNode].className = '';
                     el.className = 'end';
                     endNode = i;
@@ -666,6 +698,8 @@
         grid.id = 'mazeGrid';
         return grid;
     }
+
+    //  create the grid using a table, populate some of the dictionaries with this data.
     function clickableGrid(rows, cols, callback) {
         var i = 0;
         var grid = document.createElement('table');
@@ -680,7 +714,8 @@
                 gridMap[i] = cell;
                 yPosition[i] = c;
                 xPosition[i] = r;
-                cell.addEventListener('click', (function (el, r, c, i) {
+                cell.addEventListener('click', (function (el, r, c, i)
+                {
                     return function () {
                         callback(el, r, c, i);
                     }
@@ -689,7 +724,12 @@
         }
         return grid;
     }
+
+    // set up application with grid and sample execution.
+    buildGrid(colLen, rowLen);
+
     executeScriptBtn();
+
 </script>
 
 </body>
