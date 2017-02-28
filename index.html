@@ -221,7 +221,6 @@
     //  enable the debug menu.
     function setDebugBtn() {
         Util.log("You clicked on setDebugBtn");
-        //editorMode = 'setDebug';
         var x = document.getElementById('debug');
         if (x.style.display === 'none')
         {
@@ -267,11 +266,11 @@
 
         //  warnings for missing nodes
         if (!startNode) {
-            alert("Please select start node");
+            //alert("Please select start node");
             return -1;
         }
         if (!endNode) {
-            alert("Please select end node");
+            //alert("Please select end node");
             return -1;
         }
 
@@ -377,16 +376,13 @@
     //  impl.
     function Dijkstra() {
         var alreadyChecked = [];
-        var todoNodes = [];
-        var shortestCost = [];
-        var prevNode = [];
+        var todoNodes = new Array(rowLen*colLen);
+        var shortestCost = new Array(rowLen*colLen);
+        var prevNode = new Array(rowLen*colLen);
 
         //  theres probably a better way to populate some data structures here
-        delete xPosition[0];
-
         for (var t in xPosition) {
             shortestCost[t] = Number.MAX_VALUE;
-            prevNode[t] = 0;
             todoNodes[t] = 0;
         }
 
@@ -394,12 +390,10 @@
         var steps = [];
         shortestCost[startNode] = 0;
 
-        delete todoNodes[0];
-
         //  find the node with the lowest cost. pop it.
         function PopMinNodeTodo() {
             //this should probably be implemented with a heap so operations can be log n time..
-            var low_key = -1;
+            var low_key = null;
             var low_value = Number.MAX_VALUE;
             for (var key in shortestCost) {
                 if (shortestCost[key] < low_value) {
@@ -428,12 +422,12 @@
             return blocked.indexOf(i) > -1 || alreadyChecked.indexOf(i) > -1;
         }
 
-        while (todoNodes) {
+        while (true) {
             //we pick the node with the shortest distance that hasn't yet been checked.
             currentNode = PopMinNodeTodo();
 
             //we've exhausted everything
-            if (currentNode == -1) {
+            if (!currentNode) {
                 //Util.log("Dijkstra done, currentNode == -1 ");
                 if (prevNode[endNode] &&  prevNode[endNode] != 0 )
                 {
@@ -520,9 +514,6 @@
          */
         function PopMinNode() {
 
-            // error case
-            if (!todo_dict)
-                return -1;
             var low_key = null;
             var low_value = Number.MAX_VALUE;
             for (var key in todo_dict) {
@@ -535,13 +526,13 @@
             return parseInt(low_key);
         }
 
+        // if its been blocked or we have already seen it, true..
         function isBlocked(i) {
-            // if its been blocked or we have already seen it, true..
             if (i == -1) return true;
             return blocked.indexOf(i) > -1 || steps.indexOf(i) > -1;
         }
 
-        while (todo_dict) {
+        while (true) {
             currentNode = PopMinNode();
 
             if (!currentNode)
@@ -623,6 +614,7 @@
         Util.cleanup();
     }
 
+    // construct grid and attach it do the dom.
     function buildGrid(colLen, rowLen) {
         Util.log('Building Grid');
 
@@ -699,7 +691,7 @@
         return grid;
     }
 
-    //  create the grid using a table, populate some of the dictionaries with this data.
+    //  create the grid using a table, populate some of the dictionaries with position data.
     function clickableGrid(rows, cols, callback) {
         var i = 0;
         var grid = document.createElement('table');
